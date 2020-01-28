@@ -4,9 +4,10 @@ const path = require('path');
 
 const accessKeyId = process.argv[2] !== undefined ? process.argv[2] : null;
 const secretAccessKey = process.argv[3] !== undefined ? process.argv[3] : null;
+console.log(accessKeyId, secretAccessKey)
 const BUCKET_NAME = 'handyproxy-proxies';
 
-const S3 = new AWS.S3({
+const s3 = new AWS.S3({
   apiVersion: '2006-03-01',
   sslEnabled: true,
   accessKeyId,
@@ -14,12 +15,12 @@ const S3 = new AWS.S3({
 });
 
 const uploadFile = (filePath, bucketFileName) => {
-  let fileContents = fs.readFileSync(fileName);
+  let fileContents = fs.readFileSync(filePath);
 
   s3.upload({
     Bucket: BUCKET_NAME,
     Key: bucketFileName,
-    Body: JSON.parse()
+    Body: fileContents
   }, (err, data) => {
     if (err) {
       throw err;

@@ -16,13 +16,13 @@ const agent = (protocol, proxy) => new agents[protocol](proxy);
 const concurrency = 9;
 const timeout = 8000;
 
-// const ipCheckUrl = 'http://checkip.dyndns.com/';
-const ipCheckUrl = 'https://ipinfo.io/ip';
+const ipCheckUrl = 'http://checkip.dyndns.com/';
+// const ipCheckUrl = 'https://ipinfo.io/ip';
 
 const getCurrentIp = () => fetch(ipCheckUrl)
   .then(response => response.text())
   .then(response => response.trim())
-  // .then(response => response.match(/Current IP Address: (.+)<\/body>/)[1].trim());
+  .then(response => response.match(/Current IP Address: (.+)<\/body>/)[1].trim());
 
 const checkProxy = (ip, port, protocol) => {
   const proxy = `${protocol}://${ip}:${port}`;
@@ -48,7 +48,7 @@ const checkProxy = (ip, port, protocol) => {
   })
   .then(response => response.text())
   .then(response => response.trim())
-  // .then(response => response.match(/Current IP Address: (.+)<\/body>/)[1].trim())
+  .then(response => response.match(/Current IP Address: (.+)<\/body>/)[1].trim())
   .then(realIp => {
     if(!/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.test(realIp)) {
         throw Error('Response has been modified by proxy. ' + realIp);
