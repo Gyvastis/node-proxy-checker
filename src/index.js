@@ -80,7 +80,7 @@ const writeOutputAppend = (dataItem) => {
 
   const proxies = await readFile('./src/proxies.json', 'utf8')
     .then(JSON.parse)
-    .then(data => data.slice(1,10))
+    // .then(data => data.slice(1,10))
 
   const startedAt = new Date().getTime();
   let processed = 0;
