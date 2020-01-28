@@ -4,10 +4,12 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "woop": "node ./src/index.js"
+    "ping": "node ./src/index.js",
+    "upload": "node ./src/store.js"
   },
   "dependencies": {
     "abort-controller": "^3.0.0",
+    "aws-sdk": "^2.610.0",
     "bluebird": "^3.7.1",
     "http-proxy-agent": "^2.1.0",
     "https-proxy-agent": "^3.0.1",
