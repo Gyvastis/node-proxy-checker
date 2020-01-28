@@ -20,7 +20,8 @@ const uploadFile = (filePath, bucketFileName) => {
   s3.upload({
     Bucket: BUCKET_NAME,
     Key: bucketFileName,
-    Body: fileContents
+    Body: fileContents,
+    ACL:'public-read'
   }, (err, data) => {
     if (err) {
       throw err;
