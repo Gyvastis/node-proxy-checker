@@ -12,7 +12,7 @@ const agents = {
   socks5: require('socks-proxy-agent'),
 };
 const agent = (protocol, proxy) => new agents[protocol](proxy);
-
+const outputFile = './output/output.json';
 const concurrency = 9;
 const timeout = 8000;
 
@@ -65,18 +65,9 @@ const checkProxy = (ip, port, protocol) => {
   }));
 };
 
-const writeOutput = data => {
+const writeOutputAppend = (dataItem) => {
   try {
-    fs.writeFileSync('./output/output.json', data);
-  } catch (err) {
-    // An error occurred
-    console.error(err);
-  }
-}
-
-const writeOutputAppend = dataItem => {
-  try {
-    fs.appendFileSync('./output/output.json', `${JSON.stringify(dataItem)},\n`);
+    fs.appendFileSync(outputFile, `${JSON.stringify(dataItem)},\n`);
   } catch (err) {
     // An error occurred
     console.error(err);
@@ -89,10 +80,11 @@ const writeOutputAppend = dataItem => {
 
   const proxies = await readFile('./src/proxies.json', 'utf8')
     .then(JSON.parse)
-    // .then(data => data.slice(1, 10));
+    .then(data => data.slice(1,10))
+
   const startedAt = new Date().getTime();
   let processed = 0;
-  writeOutput("[\n")
+  fs.writeFileSync(outputFile, "[\n")
 
   Promise.map(proxies, proxy => {
     return checkProxy(proxy.ip, proxy.port, proxy.protocol)
@@ -114,6 +106,8 @@ const writeOutputAppend = dataItem => {
         console.log(`${++processed}/${proxies.length} ${err.name}: ${proxy.protocol}://${proxy.ip}:${proxy.port}. ${err.message}`);
       });
   }, { concurrency })
-  .then(() => writeOutput("\n]"))
+  .then(() => readFile(outputFile, 'utf8').then(json => {
+    fs.writeFileSync(outputFile, json.replace(/[^}]+$/g, '')+"\n]")
+  }))
   .then(() => console.log(new Date().getTime() - startedAt));
 })();
