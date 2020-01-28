@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "woop": "node ./src/index.js"
+  },
   "dependencies": {
     "abort-controller": "^3.0.0",
     "bluebird": "^3.7.1",
