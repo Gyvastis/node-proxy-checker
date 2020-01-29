@@ -1,24 +1,20 @@
 const AWS = require('aws-sdk');
 const fs = require('fs');
 const path = require('path');
-
-const accessKeyId = process.argv[2] !== undefined ? process.argv[2] : null;
-const secretAccessKey = process.argv[3] !== undefined ? process.argv[3] : null;
-console.log(accessKeyId, secretAccessKey)
-const BUCKET_NAME = 'handyproxy-proxies';
+const secrets = require('secrets');
 
 const s3 = new AWS.S3({
   apiVersion: '2006-03-01',
   sslEnabled: true,
-  accessKeyId,
-  secretAccessKey
+  secrets.ACCESS_KEY_ID,
+  secrets.SECRET_ACCESS_KEY
 });
 
 const uploadFile = (filePath, bucketFileName) => {
   let fileContents = fs.readFileSync(filePath);
 
   s3.upload({
-    Bucket: BUCKET_NAME,
+    Bucket: secrets.BUCKET_NAME,
     Key: bucketFileName,
     Body: fileContents,
     ACL:'public-read'

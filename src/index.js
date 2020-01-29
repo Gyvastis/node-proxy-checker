@@ -93,10 +93,6 @@ const writeOutputAppend = (dataItem) => {
         ...proxy,
         hidesIp: data.realIp !== myIp,
       }))
-      // .then(data => getIpCountry(ip, port, protocol).then(countryCode => ({
-      //   ...data,
-      //   country_code: countryCode,
-      // })))
       .then(data => {
         console.log(`${++processed}/${proxies.length} ${JSON.stringify(data)}`)
         return data;
