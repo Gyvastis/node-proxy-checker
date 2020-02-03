@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "ping": "node ./src/index.js",
-    "upload": "node ./src/store.js"
+    "upload": "node ./src/upload.js"
   },
   "dependencies": {
     "abort-controller": "^3.0.0",
