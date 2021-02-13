@@ -1,7 +1,7 @@
-const fetch = require('node-fetch');
+const axios = require('axios').default;
 const fs = require('fs');
 const Promise = require('bluebird');
-fetch.Promise = Promise;
+axios.Promise = Promise;
 
 const readFile = Promise.promisify(fs.readFile);
 
@@ -13,55 +13,58 @@ const agents = {
 };
 const agent = (protocol, proxy) => new agents[protocol](proxy);
 const outputFile = './output/output.json';
-const concurrency = 9;
+const concurrency = 30;
 const timeout = 8000;
 
-const ipCheckUrl = 'http://checkip.dyndns.com/';
-// const ipCheckUrl = 'https://ipinfo.io/ip';
+function shuffle(a) {
+  for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 
-const getCurrentIp = () => fetch(ipCheckUrl)
-  .then(response => response.text())
-  .then(response => response.trim())
-  .then(response => response.match(/Current IP Address: (.+)<\/body>/)[1].trim());
+// TODO: add random user agent
+// const ipCheckUrl = 'http://checkip.dyndns.com/';
+// const ipCheckUrl = 'https://ipinfo.io/ip';
+const getCurrentIp = () => axios.get('https://ifconfig.co/ip', {
+  responseType: 'text',
+}).then(response => response.data.trim())
 
 const checkProxy = (ip, port, protocol) => {
-  const proxy = `${protocol}://${ip}:${port}`;
+  const proxyProtocol = !protocol || protocol === 'https' ? 'http' : protocol;
+  const proxy = `${proxyProtocol}://${ip}:${port}`;
 
-  if(!ip || !port || !protocol) return new Promise((resolve, reject) => reject({
+  if(!ip || !port || !proxyProtocol) return new Promise((resolve, reject) => reject({
     name: 'MissingMandatory',
     message: 'IP, PORT or PROTOCOL missing.'
   }));
 
-  console.log(`Checking ${proxy}...`);
+  console.log(`Checking '${protocol}' ${proxy}...`);
   const startedAt = new Date().getTime();
 
-  return fetch(ipCheckUrl, {
-    agent: agent(protocol, proxy),
+  return axios.get('https://ifconfig.co/json', {
+    httpsAgent: agent(!protocol ? 'http' : protocol, proxy),
+    maxRedirects: 0,
+    responseType: 'json',
     timeout,
   })
-  .then(response => {
-    if (response.ok) {
-        return response;
-    } else {
-        throw Error(response.statusText);
+  .then(response => response.data)
+  .then(json => {
+    if(!/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.test(json.ip)) {
+        throw Error('Response has been modified by proxy.');
     }
+    return { 
+      realIp: json.ip,
+      countryCode: json.country_iso,
+    };
   })
-  .then(response => response.text())
-  .then(response => response.trim())
-  .then(response => response.match(/Current IP Address: (.+)<\/body>/)[1].trim())
-  .then(realIp => {
-    if(!/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.test(realIp)) {
-        throw Error('Response has been modified by proxy. ' + realIp);
-    }
-
-    return realIp;
-  })
-  .then(realIp => ({
+  .then(json => ({
     ip,
     port,
     protocol,
-    realIp,
     responseTime: new Date().getTime() - startedAt,
+    ...json,
   }));
 };
 
@@ -69,7 +72,6 @@ const writeOutputAppend = (dataItem) => {
   try {
     fs.appendFileSync(outputFile, `${JSON.stringify(dataItem)},\n`);
   } catch (err) {
-    // An error occurred
     console.error(err);
   }
 }
@@ -78,9 +80,9 @@ const writeOutputAppend = (dataItem) => {
   const myIp = await getCurrentIp();
   console.log(`Current IP: ${myIp}`);
 
-  const proxies = await readFile('./src/proxies.json', 'utf8')
-    .then(JSON.parse)
-    // .then(data => data.slice(1,10))
+  let proxies = await readFile('./src/proxies.json', 'utf8').then(JSON.parse)
+  proxies = shuffle(proxies)
+  // .slice(1,10)
 
   const startedAt = new Date().getTime();
   let processed = 0;
@@ -89,8 +91,8 @@ const writeOutputAppend = (dataItem) => {
   Promise.map(proxies, proxy => {
     return checkProxy(proxy.ip, proxy.port, proxy.protocol)
       .then(data => ({
-        ...data,
         ...proxy,
+        ...data,
         hidesIp: data.realIp !== myIp,
       }))
       .then(data => {
