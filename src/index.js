@@ -1,5 +1,6 @@
 const axios = require('axios').default;
 const fs = require('fs');
+const UserAgent = require('user-agents');
 const Promise = require('bluebird');
 axios.Promise = Promise;
 
@@ -24,11 +25,13 @@ function shuffle(a) {
   return a;
 }
 
-// TODO: add random user agent
 // const ipCheckUrl = 'http://checkip.dyndns.com/';
 // const ipCheckUrl = 'https://ipinfo.io/ip';
 const getCurrentIp = () => axios.get('https://ifconfig.co/ip', {
   responseType: 'text',
+  headers: {
+    'User-Agent': (new UserAgent()).toString(),
+  },
 }).then(response => response.data.trim())
 
 const checkProxy = (ip, port, protocol) => {
@@ -48,6 +51,9 @@ const checkProxy = (ip, port, protocol) => {
     maxRedirects: 0,
     responseType: 'json',
     timeout,
+    headers: {
+      'User-Agent': (new UserAgent()).toString(),
+    },
   })
   .then(response => response.data)
   .then(json => {
