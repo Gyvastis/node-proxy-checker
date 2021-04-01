@@ -11,6 +11,7 @@
     "bluebird": "^3.7.1",
     "http-proxy-agent": "^2.1.0",
     "https-proxy-agent": "^3.0.1",
+    "node-fetch": "^2.6.1",
     "socks-proxy-agent": "^4.0.2",
     "user-agents": "^1.0.561"
   }

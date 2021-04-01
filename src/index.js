@@ -2,6 +2,7 @@ const axios = require('axios').default;
 const fs = require('fs');
 const UserAgent = require('user-agents');
 const Promise = require('bluebird');
+const fetch = require('node-fetch');
 axios.Promise = Promise;
 
 const readFile = Promise.promisify(fs.readFile);
