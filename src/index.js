@@ -86,7 +86,8 @@ const writeOutputAppend = (dataItem) => {
   const myIp = await getCurrentIp();
   console.log(`Current IP: ${myIp}`);
 
-  let proxies = await readFile('./src/proxies.json', 'utf8').then(JSON.parse)
+  // let proxies = await readFile('./src/proxies.json', 'utf8').then(JSON.parse)
+  let proxies = await fetch('https://raw.githubusercontent.com/HandyProxy/node-proxy-scraper/master/output/output.merged.json').then(res => res.json());
   proxies = shuffle(proxies)
   // .slice(1,10)
 
