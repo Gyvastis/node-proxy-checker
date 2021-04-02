@@ -95,7 +95,7 @@ const writeOutputAppend = (dataItem) => {
   // let proxies = await readFile('./src/proxies.json', 'utf8').then(JSON.parse)
   let proxies = await fetch('https://raw.githubusercontent.com/HandyProxy/node-proxy-scraper/master/output/output.merged.json').then(res => res.json());
   proxies = shuffle(proxies)
-  .slice(1,10)
+  // .slice(1,10)
 
   const startedAt = new Date().getTime();
   let processed = 0;
