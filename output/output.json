@@ -512,4 +512,5 @@
 {"ip":"36.95.48.45","port":"5678","countryCode":"ID","anonymity":"elite","protocol":"socks4","responseTime":17110,"realIp":"36.95.48.45","hidesIp":true},
 {"ip":"200.41.182.243","port":"4145","countryCode":"AR","anonymity":"elite","protocol":"socks4","responseTime":851,"realIp":"200.41.182.243","hidesIp":true},
 {"ip":"91.98.102.84","port":"1080","countryCode":"DE","anonymity":null,"protocol":"https","responseTime":2260,"realIp":"176.9.166.214","hidesIp":true},
-{"ip":"1.10.186.35","port":"59969","countryCode":"TH","anonymity":"elite","protocol":"socks4","responseTime":4417,"realIp":"1.10.186.35","hidesIp":true},
+{"ip":"1.10.186.35","port":"59969","countryCode":"TH","anonymity":"elite","protocol":"socks4","responseTime":4417,"realIp":"1.10.186.35","hidesIp":true}
+]
