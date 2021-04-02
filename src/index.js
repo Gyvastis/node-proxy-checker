@@ -112,8 +112,8 @@ const writeOutputAppend = (dataItem) => {
         console.log(`${++processed}/${proxies.length} ${err.name}: ${proxy.protocol}://${proxy.ip}:${proxy.port}. ${err.message}`);
       });
   }, { concurrency })
-  .then(() => readFile(outputFile, 'utf8').then(json => {
-    fs.writeFileSync(outputFile, json.replace(/[^}]+$/g, '')+"\n]")
-  }))
+  .then(async () => {
+    await readFile(outputFile, 'utf8').then(json => { fs.writeFileSync(outputFile, json.replace(/[^}]+$/g, '')+"\n]") } );
+  })
   .then(() => console.log(new Date().getTime() - startedAt));
 })();
