@@ -107,7 +107,7 @@ const writeOutputAppend = (dataItem) => {
         ...proxy,
         ...data,
         hidesIp: data.realIp !== myIp,
-        realIp: myIp,
+        realIp: null,
       }))
       .then(data => {
         console.log(`${++processed}/${proxies.length} ${JSON.stringify(data)}`)
