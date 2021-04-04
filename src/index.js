@@ -108,7 +108,7 @@ const writeOutputAppend = (dataItem) => {
         ...data,
         hidesIp: data.realIp !== myIp,
         realIp: null,
-        anonymity: data.anonymity ? data.anonymity : 'anonymous'
+        anonymity: proxy.anonymity ? proxy.anonymity : 'anonymous'
       }))
       .then(data => {
         console.log(`${++processed}/${proxies.length} ${JSON.stringify(data)}`)
