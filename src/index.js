@@ -52,31 +52,40 @@ const checkProxy = (ip, port, protocol) => {
   console.log(`Checking '${protocol}' ${proxy}...`);
   const startedAt = new Date().getTime();
 
-  return axios.get('https://ifconfig.co/json', {
+  return axios.get('https://handyproxy.github.io/check/', {
+//   return axios.get('https://ifconfig.co/json', {
     httpsAgent: agent(!protocol ? 'http' : protocol, proxy),
     maxRedirects: 0,
-    responseType: 'json',
+    responseType: 'text',
+//     responseType: 'json',
     timeout,
     headers: {
       'User-Agent': (new UserAgent()).toString(),
     },
   })
   .then(response => response.data)
-  .then(json => {
-    if(!/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.test(json.ip)) {
-        throw Error('Response has been modified by proxy.');
+//   .then(json => {
+//     if(!/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.test(json.ip)) {
+//         throw Error('Response has been modified by proxy.');
+//     }
+//     return { 
+//       realIp: json.ip,
+//       countryCode: json.country_iso,
+//     };
+//   })
+  .then(text => {
+    if(text.trim() !== 'Ok') {
+       throw Error('Response has been modified by proxy.');
     }
-    return { 
-      realIp: json.ip,
-      countryCode: json.country_iso,
-    };
+
+    return text;
   })
-  .then(json => ({
+  .then(() => ({
     ip,
     port,
     protocol,
     responseTime: new Date().getTime() - startedAt,
-    ...json,
+//     ...json,
   }));
 };
 
@@ -89,8 +98,8 @@ const writeOutputAppend = (dataItem) => {
 }
 
 (async () => {
-  const myIp = await getCurrentIp();
-  console.log(`Current IP: ${myIp}`);
+//   const myIp = await getCurrentIp();
+//   console.log(`Current IP: ${myIp}`);
 
   // let proxies = await readFile('./src/proxies.json', 'utf8').then(JSON.parse)
   let proxies = await fetch('https://raw.githubusercontent.com/HandyProxy/node-proxy-scraper/master/output/output.merged.json').then(res => res.json());
@@ -106,7 +115,8 @@ const writeOutputAppend = (dataItem) => {
       .then(data => ({
         ...proxy,
         ...data,
-        hidesIp: data.realIp !== myIp,
+        hidesIp: true,
+//         hidesIp: data.realIp !== myIp,
         realIp: null,
         anonymity: proxy.anonymity ? proxy.anonymity : 'anonymous'
       }))
